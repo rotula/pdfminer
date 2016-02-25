@@ -3,6 +3,11 @@ PDFMiner
 
 [![Build Status](https://travis-ci.org/euske/pdfminer.svg?branch=master)](https://travis-ci.org/euske/pdfminer)
 
+This is a fork of the original PDFMiner software that contains some
+minor adjustments needed for the development environment within the
+Monumenta Germaniae Historica. The adjustments are expected to be of
+little use for a wider audience.
+
 PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting 
 and analyzing text data. PDFMiner allows one to obtain
