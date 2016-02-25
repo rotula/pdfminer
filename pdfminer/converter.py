@@ -111,7 +111,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             text = self.handle_undefined_char(font, cid)
         textwidth = font.char_width(cid)
         textdisp = font.char_disp(cid)
-        item = LTChar(matrix, font, fontsize, scaling, rise, text, textwidth, textdisp)
+        item = LTChar(matrix, font, fontsize, scaling, rise, text, textwidth, textdisp, cid)
         self.cur_item.add(item)
         return item.adv
 
@@ -477,8 +477,8 @@ class XMLConverter(PDFConverter):
                     render(child)
                 self.outfp.write('</textbox>\n')
             elif isinstance(item, LTChar):
-                self.outfp.write('<text font="%s" bbox="%s" size="%.3f">' %
-                                 (enc(item.fontname), bbox2str(item.bbox), item.size))
+                self.outfp.write('<text font="%s" bbox="%s" size="%.3f" cid="%s">' %
+                                 (enc(item.fontname), bbox2str(item.bbox), item.size, str(item.cid)))
                 self.write_text(item.get_text())
                 self.outfp.write('</text>\n')
             elif isinstance(item, LTText):
