@@ -3,7 +3,7 @@ from distutils.core import setup
 from pdfminer import __version__
 
 setup(
-    name='pdfminer_mgh',
+    name='pdfminer-mgh',
     version=__version__,
     description='PDF parser and analyzer',
     long_description='''PDFMiner is a tool for extracting information from PDF documents.
@@ -20,7 +20,7 @@ PDF parser that can be used for other purposes instead of text analysis.''',
     author_email='yusuke at cs dot nyu dot edu',
     maintainer='Clemens Radl',
     maintainer_email='clemens.radl@mgh.de',
-    url='http://www.mgh.de/soft/pdfminer_mgh',
+    url='http://www.mgh.de/soft/pdfminer-mgh',
     packages=[
     'pdfminer',
     ],
