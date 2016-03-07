@@ -141,6 +141,7 @@ Terms and Conditions
 (This is so-called MIT/X License)
 
 Copyright (c) 2004-2014  Yusuke Shinyama <yusuke at cs dot nyu dot edu>
+
 Copyright (c) 2016  Clemens Radl <clemens.radl@mgh.de>
 
 Permission is hereby granted, free of charge, to any person
