@@ -1,8 +1,6 @@
 PDFMiner
 ========
 
-[![Build Status](https://travis-ci.org/euske/pdfminer.svg?branch=master)](https://travis-ci.org/euske/pdfminer)
-
 This is a fork of the original PDFMiner software that contains some
 minor adjustments needed for the development environment within the
 Monumenta Germaniae Historica. The adjustments are expected to be of
@@ -143,6 +141,7 @@ Terms and Conditions
 (This is so-called MIT/X License)
 
 Copyright (c) 2004-2014  Yusuke Shinyama <yusuke at cs dot nyu dot edu>
+Copyright (c) 2016  Clemens Radl <clemens.radl@mgh.de>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
