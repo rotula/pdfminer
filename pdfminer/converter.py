@@ -458,7 +458,7 @@ class XMLConverter(PDFConverter):
                                  (item.linewidth, bbox2str(item.bbox), item.get_pts()))
             elif isinstance(item, LTFigure):
                 self.outfp.write('<figure name="%s" bbox="%s">\n' %
-                                 (item.name, bbox2str(item.bbox)))
+                                 (str(item.name), bbox2str(item.bbox)))
                 for child in item:
                     render(child)
                 self.outfp.write('</figure>\n')
