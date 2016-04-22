@@ -38,7 +38,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         (x0, y0) = apply_matrix_pt(ctm, (x0, y0))
         (x1, y1) = apply_matrix_pt(ctm, (x1, y1))
         mediabox = (0, 0, abs(x0-x1), abs(y0-y1))
-        self.cur_item = LTPage(self.pageno, mediabox)
+        self.cur_item = LTPage(self.pageno, mediabox, label=page.label)
         return
 
     def end_page(self, page):
@@ -437,8 +437,13 @@ class XMLConverter(PDFConverter):
 
         def render(item):
             if isinstance(item, LTPage):
-                self.outfp.write('<page id="%s" bbox="%s" rotate="%d">\n' %
-                                 (item.pageid, bbox2str(item.bbox), item.rotate))
+                labelattr = ''
+                if item.label is not None:
+                    labelattr = ' label="%s"' % item.label
+                self.outfp.write('<page id="%s" bbox="%s" rotate="%d"'\
+                        '%s>\n' %
+                        (item.pageid,
+                            bbox2str(item.bbox), item.rotate, labelattr))
                 for child in item:
                     render(child)
                 if item.groups is not None:

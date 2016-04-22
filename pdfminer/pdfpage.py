@@ -41,7 +41,7 @@ class PDFPage(object):
 
     debug = False
 
-    def __init__(self, doc, pageid, attrs):
+    def __init__(self, doc, pageid, attrs, label=None):
         """Initialize a page object.
 
         doc: a PDFDocument object.
@@ -50,6 +50,7 @@ class PDFPage(object):
         """
         self.doc = doc
         self.pageid = pageid
+        self.label = label
         self.attrs = dict_value(attrs)
         self.lastmod = resolve1(self.attrs.get('LastModified'))
         self.resources = resolve1(self.attrs.get('Resources', dict()))
@@ -96,9 +97,33 @@ class PDFPage(object):
                 if klass.debug: logging.info('Page: %r' % tree)
                 yield (objid, tree)
         pages = False
+        if 'PageLabels' in document.catalog:
+            # read page labels entry
+            # create list of labels
+            pagelabels = dict_value(document.catalog['PageLabels'])
+            numtree = list_value(pagelabels['Nums'])
+            fullnumtree = []
+            for e in numtree:
+                if isinstance(e, int):
+                    fullnumtree.append(e)
+                else:
+                    fullnumtree.append(dict_value(e))
+            print(fullnumtree)
+            labels = ["I", "II", "III", "IV"]
+        else:
+            labels = None
+        cnt = 0
         if 'Pages' in document.catalog:
             for (objid, tree) in search(document.catalog['Pages'], document.catalog):
-                yield klass(document, objid, tree)
+                if labels is not None:
+                    try:
+                        label = labels[cnt]
+                    except IndexError:
+                        label = None
+                else:
+                    label = None
+                yield klass(document, objid, tree, label)
+                cnt += 1
                 pages = True
         if not pages:
             # fallback when /Pages is missing.
