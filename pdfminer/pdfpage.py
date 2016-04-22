@@ -78,6 +78,32 @@ class PDFPage(object):
 
     @classmethod
     def create_pages(klass, document):
+        def get_label(numtree, cnt):
+            tree = None
+            for i in range(0, len(numtree), 2):
+                if cnt <= numtree[i]:
+                    break
+            startcnt = numtree[i]
+            tree = numtree[i + 1]
+            start = tree.get("St", 1)
+            prefix = tree.get("P", "")
+            style = tree.get("S").name
+            # print(type(style))
+            num = start + (cnt - startcnt)
+            value = ""
+            if style == "D":
+                value = str(num)
+            elif style == "R":
+                value = "@@@"
+            elif style == "r":
+                value = "@@@"
+            elif style == "A":
+                value = (((num - 1)/26 + 1)*
+                        ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(num - 1) % 26]))
+            elif style == "a":
+                value = (((num - 1)/26 + 1)*
+                        ("abcdefghijklmnopqrstuvwxyz"[(num - 1) % 26]))
+            return prefix + value
         def search(obj, parent):
             if isinstance(obj, int):
                 objid = obj
@@ -108,18 +134,15 @@ class PDFPage(object):
                     fullnumtree.append(e)
                 else:
                     fullnumtree.append(dict_value(e))
-            print(fullnumtree)
-            labels = ["I", "II", "III", "IV"]
+            # print(fullnumtree)
+            # labels = ["I", "II", "III", "IV"]
         else:
-            labels = None
+            fullnumtree = None
         cnt = 0
         if 'Pages' in document.catalog:
             for (objid, tree) in search(document.catalog['Pages'], document.catalog):
-                if labels is not None:
-                    try:
-                        label = labels[cnt]
-                    except IndexError:
-                        label = None
+                if fullnumtree is not None:
+                    label = get_label(fullnumtree, cnt)
                 else:
                     label = None
                 yield klass(document, objid, tree, label)
