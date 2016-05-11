@@ -229,6 +229,8 @@ class LTChar(LTComponent, LTText):
         self.fontname = font.fontname
         # cid == -1 means: was not specified, undefined
         self.cid = cid
+        self.rise = rise
+        self.origin = matrix[4:]
         self.adv = textwidth * fontsize * scaling
         # compute the boundary rectangle.
         if font.is_vertical():

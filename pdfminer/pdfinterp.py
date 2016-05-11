@@ -141,9 +141,13 @@ class PDFResourceManager(object):
 
     debug = False
     
-    def __init__(self, caching=True):
+    def __init__(self, caching=True, font_correctors=None):
         self.caching = caching
         self._cached_fonts = {}
+        self.font_correctors = []
+        if font_correctors is not None:
+            for fc in font_correctors:
+                self.font_correctors.append(fc)
         return
 
     def get_procset(self, procs):
@@ -206,6 +210,9 @@ class PDFResourceManager(object):
                 if STRICT:
                     raise PDFFontError('Invalid Font spec: %r' % spec)
                 font = PDFType1Font(self, spec)  # this is so wrong!
+            # insert font correction mechanisms here
+            for fc in self.font_correctors:
+                fc.correct(font)
             if objid and self.caching:
                 self._cached_fonts[objid] = font
         return font

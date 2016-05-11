@@ -17,11 +17,11 @@ def main(argv):
         print ('usage: %s [-d] [-p pagenos] [-m maxpages] [-P password] [-o output]'
                ' [-C] [-n] [-A] [-V] [-M char_margin] [-L line_margin] [-W word_margin]'
                ' [-F boxes_flow] [-Y layout_mode] [-O output_dir] [-R rotation] [-S]'
-               ' [-t text|html|xml|tag] [-c codec] [-s scale]'
+               ' [-t text|html|xml|tag] [-c codec] [-s scale] [-f fontcorrector]'
                ' file ...' % argv[0])
         return 100
     try:
-        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:CnAVM:L:W:F:Y:O:R:St:c:s:')
+        (opts, args) = getopt.getopt(argv[1:], 'dp:m:P:o:CnAVM:L:W:F:Y:O:R:St:c:s:f:')
     except getopt.GetoptError:
         return usage()
     if not args: return usage()
@@ -44,6 +44,7 @@ def main(argv):
     caching = True
     showpageno = True
     laparams = LAParams()
+    font_corrector_filename = ''
     for (k, v) in opts:
         if k == '-d': debug += 1
         elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
@@ -65,13 +66,22 @@ def main(argv):
         elif k == '-t': outtype = v
         elif k == '-c': codec = v
         elif k == '-s': scale = float(v)
+        elif k == '-f': font_corrector_filename = v
     #
     PDFDocument.debug = debug
     PDFParser.debug = debug
     CMapDB.debug = debug
     PDFPageInterpreter.debug = debug
     #
-    rsrcmgr = PDFResourceManager(caching=caching)
+    # Font correction
+    font_correctors = []
+    if font_corrector_filename:
+        import imp
+        fc_loader = imp.load_source("fc_loader", font_corrector_filename)
+        font_correctors = fc_loader.fc_loader()
+    #
+    rsrcmgr = PDFResourceManager(
+            caching=caching, font_correctors=font_correctors)
     if not outtype:
         outtype = 'text'
         if outfile:

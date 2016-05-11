@@ -20,6 +20,7 @@ from .utils import apply_matrix_pt
 from .utils import mult_matrix
 from .utils import enc
 from .utils import bbox2str
+from .utils import origin2str
 
 
 ##  PDFLayoutAnalyzer
@@ -482,8 +483,8 @@ class XMLConverter(PDFConverter):
                     render(child)
                 self.outfp.write('</textbox>\n')
             elif isinstance(item, LTChar):
-                self.outfp.write('<text font="%s" bbox="%s" size="%.3f" cid="%s">' %
-                                 (enc(item.fontname), bbox2str(item.bbox), item.size, str(item.cid)))
+                self.outfp.write('<text font="%s" bbox="%s" size="%.3f" cid="%s" rise="%s" origin="%s">' %
+                                 (enc(item.fontname), bbox2str(item.bbox), item.size, str(item.cid), str(item.rise), origin2str(item.origin)))
                 self.write_text(item.get_text())
                 self.outfp.write('</text>\n')
             elif isinstance(item, LTText):
