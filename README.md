@@ -1,5 +1,5 @@
-PDFMiner.six
-============
+PDFMiner.six-mgh
+================
 
 This is a fork of the original PDFMiner software that contains some
 minor adjustments needed for the development environment within the
