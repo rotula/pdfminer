@@ -10,8 +10,6 @@ if sys.version_info >= (3, 0):
 setup(
     name='pdfminer.six-mgh',
     version=__version__,
-    packages=['pdfminer'],
-    package_data={'pdfminer': ['cmap/*.pickle.gz']},
     install_requires=requires,
     description='PDF parser and analyzer',
     long_description='''PDFMiner.six-mgh is a tool for extracting information from PDF documents.
