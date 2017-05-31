@@ -276,7 +276,12 @@ def decode_text(s):
 def enc(x, codec='ascii'):
     """Encodes a string for SGML/XML/HTML"""
     if isinstance(x, bytes):
-        return ''
+        # at least try something (first assume UTF-8)
+        try:
+            x = x.decode("UTF-8")
+        except UnicodeDecodeError:
+            x = x.decode("ISO-8859-1")
+        # return ''
     x = x.replace('&', '&amp;').replace('>', '&gt;').replace('<', '&lt;').replace('"', '&quot;')
     if codec:
         x = x.encode(codec, 'xmlcharrefreplace')
