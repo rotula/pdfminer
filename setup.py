@@ -26,7 +26,7 @@ PDF parser that can be used for other purposes instead of text analysis.''',
     author_email='pdfminer@goulu.net',
     maintainer='Clemens Radl',
     maintainer_email='clemens.radl@mgh.de',
-    url='http://www.mgh.de/soft/pdfminer.six-mgh',
+    url='http://www.mgh.de/soft/pdfminer-six-mgh',
     packages=[
     'pdfminer',
     ],
