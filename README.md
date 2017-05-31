@@ -1,23 +1,25 @@
-PDFMiner
-========
+PDFMiner.six
+============
 
 This is a fork of the original PDFMiner software that contains some
 minor adjustments needed for the development environment within the
 Monumenta Germaniae Historica. The adjustments are expected to be of
 little use for a wider audience.
 
+In a later step the adjustments made in the PDFMiner.six project
+were merged into this project to ensure Python 2+3 compatibility.
+
 PDFMiner is a tool for extracting information from PDF documents.
-Unlike other PDF-related tools, it focuses entirely on getting 
+Unlike other PDF-related tools, it focuses entirely on getting
 and analyzing text data. PDFMiner allows one to obtain
-the exact location of text in a page, as well as 
+the exact location of text in a page, as well as
 other information such as fonts or lines.
 It includes a PDF converter that can transform PDF files
 into other text formats (such as HTML). It has an extensible
 PDF parser that can be used for other purposes than text analysis.
 
- * Webpage: https://euske.github.io/pdfminer/
- * Download (PyPI): https://pypi.python.org/pypi/pdfminer/
- * Demo WebApp: http://pdf2html.tabesugi.net:8080/
+ * Webpage: https://github.com/pdfminer/
+ * Download (PyPI): https://pypi.python.org/pypi/pdfminer.six/
 
 
 Features
@@ -37,40 +39,14 @@ Features
 How to Install
 --------------
 
- * Install Python 2.6 or newer. (**Python 3 is not supported.**)
- * Download the source code.
- * Unpack it.
- * Run `setup.py`:
+ * Install Python 2.7 or newer. (Python 3.x is supported in pdfminer.six)
+ * Install
 
-    $ python setup.py install
+    $ pip install pdfminer.six
 
- * Do the following test:
+ * Run the following test:
 
     $ pdf2txt.py samples/simple1.pdf
-
-
-For CJK Languages
------------------
-
-In order to process CJK languages, do the following before
-running setup.py install:
-
-    $ make cmap
-    python tools/conv_cmap.py pdfminer/cmap Adobe-CNS1 cmaprsrc/cid2code_Adobe_CNS1.txt
-    reading 'cmaprsrc/cid2code_Adobe_CNS1.txt'...
-    writing 'CNS1_H.py'...
-    ...
-    $ python setup.py install
-
-On Windows machines which don't have `make` command, 
-paste the following commands on a command line prompt:
-
-    mkdir pdfminer\cmap
-    python tools\conv_cmap.py -c B5=cp950 -c UniCNS-UTF8=utf-8 pdfminer\cmap Adobe-CNS1 cmaprsrc\cid2code_Adobe_CNS1.txt
-    python tools\conv_cmap.py -c GBK-EUC=cp936 -c UniGB-UTF8=utf-8 pdfminer\cmap Adobe-GB1 cmaprsrc\cid2code_Adobe_GB1.txt
-    python tools\conv_cmap.py -c RKSJ=cp932 -c EUC=euc-jp -c UniJIS-UTF8=utf-8 pdfminer\cmap Adobe-Japan1 cmaprsrc\cid2code_Adobe_Japan1.txt
-    python tools\conv_cmap.py -c KSC-EUC=euc-kr -c KSC-Johab=johab -c KSCms-UHC=cp949 -c UniKS-UTF8=utf-8 pdfminer\cmap Adobe-Korea1 cmaprsrc\cid2code_Adobe_Korea1.txt
-    python setup.py install
 
 
 Command Line Tools
@@ -94,45 +70,18 @@ You cannot extract any text from a PDF document which does not have extraction p
 
 **dumppdf.py**
 
-dumppdf.py dumps the internal contents of a PDF file in pseudo-XML format. 
+dumppdf.py dumps the internal contents of a PDF file in pseudo-XML format.
 This program is primarily for debugging purposes,
 but it's also possible to extract some meaningful contents (e.g. images).
 
 (For details, refer to the html document.)
 
 
-API Changes
------------
-
-As of November 2013, there were a few changes made to the PDFMiner API
-prior to October 2013. This is the result of code restructuring.  Here
-is a list of the changes:
-
- * PDFDocument class is moved to pdfdocument.py.
- * PDFDocument class now takes a PDFParser object as an argument.
-   PDFDocument.set_parser() and PDFParser.set_document() is removed.
- * PDFPage class is moved to pdfpage.py
- * process_pdf function is implemented as a class method PDFPage.get_pages.
-
-
 TODO
 ----
 
- * Replace STRICT variable with something better.
- * Use logging module instead of sys.stderr.
- * Proper test cases.
  * PEP-8 and PEP-257 conformance.
  * Better documentation.
- * Crypt stream filter support.
-
-
-Related Projects
-----------------
-
- * <a href="http://pybrary.net/pyPdf/">pyPdf</a>
- * <a href="http://www.foolabs.com/xpdf/">xpdf</a>
- * <a href="http://pdfbox.apache.org/">pdfbox</a>
- * <a href="http://mupdf.com/">mupdf</a>
 
 
 Terms and Conditions

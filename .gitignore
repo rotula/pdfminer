@@ -5,3 +5,16 @@
 MANIFEST
 dist/*
 pdfminer/tags
+*.class
+.svn
+_svn
+.pythoscope
+.ipynb_checkpoints
+.settings
+_update.bat
+docs/_build
+/build/
+/dist/
+tests/*.xml
+tests/*.txt
+.idea/

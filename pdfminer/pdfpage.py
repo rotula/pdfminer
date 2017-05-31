@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 import logging
 from .psparser import LIT
 from .pdftypes import PDFObjectNotFound
@@ -10,10 +10,13 @@ from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument
 from .pdfdocument import PDFTextExtractionNotAllowed
 
+import six  # Python 2+3 compatibility
+
+log = logging.getLogger(__name__)
+
 # some predefined literals and keywords.
 LITERAL_PAGE = LIT('Page')
 LITERAL_PAGES = LIT('Pages')
-
 
 ##  PDFPage
 ##
@@ -38,8 +41,6 @@ class PDFPage(object):
       annots: the page annotations.
       beads: a chain that represents natural reading order.
     """
-
-    debug = False
 
     def __init__(self, doc, pageid, attrs, label=None):
         """Initialize a page object.
@@ -126,16 +127,16 @@ class PDFPage(object):
             else:
                 objid = obj.objid
                 tree = dict_value(obj).copy()
-            for (k, v) in parent.iteritems():
+            for (k, v) in six.iteritems(parent):
                 if k in klass.INHERITABLE_ATTRS and k not in tree:
                     tree[k] = v
             if tree.get('Type') is LITERAL_PAGES and 'Kids' in tree:
-                if klass.debug: logging.info('Pages: Kids=%r' % tree['Kids'])
+                log.info('Pages: Kids=%r', tree['Kids'])
                 for c in list_value(tree['Kids']):
                     for x in search(c, tree):
                         yield x
             elif tree.get('Type') is LITERAL_PAGE:
-                if klass.debug: logging.info('Page: %r' % tree)
+                log.info('Page: %r', tree)
                 yield (objid, tree)
         pages = False
         if 'PageLabels' in document.catalog:
@@ -177,7 +178,7 @@ class PDFPage(object):
 
     @classmethod
     def get_pages(klass, fp,
-                  pagenos=None, maxpages=0, password=b'',
+                  pagenos=None, maxpages=0, password='',
                   caching=True, check_extractable=True):
         # Create a PDF parser object associated with the file object.
         parser = PDFParser(fp)
