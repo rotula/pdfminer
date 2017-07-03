@@ -235,6 +235,10 @@ class LTChar(LTComponent, LTText):
         self.fontname = font.fontname
         # cid == -1 means: was not specified, undefined
         self.cid = cid
+        if hasattr(font, "cid2glyphname"):
+            self.glyphname = font.cid2glyphname.get(cid, "")
+        else:
+            self.glyphname = ""
         self.rise = rise
         self.origin = matrix[4:]
         self.adv = textwidth * fontsize * scaling

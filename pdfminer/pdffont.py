@@ -545,8 +545,10 @@ class PDFSimpleFont(PDFFont):
             name = literal_name(encoding.get('BaseEncoding', LITERAL_STANDARD_ENCODING))
             diff = list_value(encoding.get('Differences', []))
             self.cid2unicode = EncodingDB.get_encoding(name, diff)
+            self.cid2glyphname = EncodingDB.get_glyphnames(name, diff)
         else:
             self.cid2unicode = EncodingDB.get_encoding(literal_name(encoding))
+            self.cid2glyphname = EncodingDB.get_glyphnames(literal_name(encoding))
         self.unicode_map = None
         if 'ToUnicode' in spec:
             strm = stream_value(spec['ToUnicode'])

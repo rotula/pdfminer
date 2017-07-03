@@ -531,8 +531,8 @@ class XMLConverter(PDFConverter):
                 # (enc(item.fontname), bbox2str(item.bbox), item.size,
                 # str(item.cid), str(item.rise), origin2str(item.origin),
                 # item.msize))
-                self.write('<text font="%s" bbox="%s" size="%.3f" cid="%s" rise="%s" origin="%s" msize="%s">' %
-                                 (enc(item.fontname, None), bbox2str(item.bbox), item.size, item.cid, item.rise, origin2str(item.origin), item.msize))
+                self.write('<text font="%s" bbox="%s" size="%.3f" cid="%s" rise="%s" origin="%s" msize="%s" glyphname="%s">' %
+                                 (enc(item.fontname, None), bbox2str(item.bbox), item.size, item.cid, item.rise, origin2str(item.origin), item.msize, item.glyphname))
                 self.write_text(item.get_text())
                 self.write('</text>\n')
             elif isinstance(item, LTText):

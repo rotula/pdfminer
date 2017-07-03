@@ -29,22 +29,37 @@ class EncodingDB(object):
     mac2unicode = {}
     win2unicode = {}
     pdf2unicode = {}
+    std_glyphs = {}
+    mac_glyphs = {}
+    win_glyphs = {}
+    pdf_glyphs = {}
     for (name, std, mac, win, pdf) in ENCODING:
         c = name2unicode(name)
         if std:
             std2unicode[std] = c
+            std_glyphs[std] = name
         if mac:
             mac2unicode[mac] = c
+            mac_glyphs[mac] = name
         if win:
             win2unicode[win] = c
+            win_glyphs[win] = name
         if pdf:
             pdf2unicode[pdf] = c
+            pdf_glyphs[pdf] = name
 
     encodings = {
         'StandardEncoding': std2unicode,
         'MacRomanEncoding': mac2unicode,
         'WinAnsiEncoding': win2unicode,
         'PDFDocEncoding': pdf2unicode,
+    }
+
+    glyphnames = {
+        'StandardEncoding': std_glyphs,
+        'MacRomanEncoding': mac_glyphs,
+        'WinAnsiEncoding': win_glyphs,
+        'PDFdocEncoding': pdf_glyphs,
     }
 
     @classmethod
@@ -63,3 +78,18 @@ class EncodingDB(object):
                         pass
                     cid += 1
         return cid2unicode
+
+    @classmethod
+    def get_glyphnames(klass, name, diff=None):
+        cid2glyphname = klass.glyphnames.get(name, klass.std_glyphs)
+        if diff:
+            cid2glyphname = cid2glyphname.copy()
+            cid = 0
+            for x in diff:
+                if isinstance(x, int):
+                    cid = x
+                elif isinstance(x, PSLiteral):
+                    cid2glyphname[cid] = x.name
+                cid += 1
+        return cid2glyphname
+
