@@ -56,9 +56,9 @@ def dumpxml(out, obj, codec=None):
 
     if isinstance(obj, PDFStream):
         if codec == 'raw':
-            out.write(obj.get_rawdata())
+            out.write(e(obj.get_rawdata()))
         elif codec == 'binary':
-            out.write(obj.get_data())
+            out.write(e(obj.get_data()))
         else:
             out.write('<stream>\n<props>\n')
             dumpxml(out, obj.attrs)
