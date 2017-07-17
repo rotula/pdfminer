@@ -91,7 +91,7 @@ Terms and Conditions
 
 Copyright (c) 2004-2014  Yusuke Shinyama <yusuke at cs dot nyu dot edu>
 
-Copyright (c) 2016  Clemens Radl <clemens.radl@mgh.de>
+Copyright (c) 2016, 2017  Clemens Radl <clemens.radl@mgh.de>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
