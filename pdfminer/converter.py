@@ -533,7 +533,14 @@ class XMLConverter(PDFConverter):
                 # item.msize))
                 self.write('<text font="%s" bbox="%s" size="%.3f" cid="%s" rise="%s" origin="%s" msize="%s" glyphname="%s">' %
                                  (enc(item.fontname, None), bbox2str(item.bbox), item.size, item.cid, item.rise, origin2str(item.origin), item.msize, item.glyphname))
-                self.write_text(item.get_text())
+                item_text = item.get_text()
+                try:
+                    if ord(item_text) < 32:
+                        self.write('<g value="%d"/>' % ord(item_text))
+                    else:
+                        self.write_text(item_text)
+                except TypeError as e:
+                    self.write_text(item_text)
                 self.write('</text>\n')
             elif isinstance(item, LTText):
                 self.write('<text>%s</text>\n' % item.get_text())

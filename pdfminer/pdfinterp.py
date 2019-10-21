@@ -821,7 +821,7 @@ class PDFPageInterpreter(object):
             if settings.STRICT:
                 raise PDFInterpreterError('Undefined xobject id: %r' % xobjid)
             return
-        log.info('Processing xobj: %r', xobj)
+        log.debug('Processing xobj: %r', xobj)
         subtype = xobj.get('Subtype')
         if subtype is LITERAL_FORM and 'BBox' in xobj:
             interpreter = self.dup()
@@ -845,7 +845,7 @@ class PDFPageInterpreter(object):
         return
 
     def process_page(self, page):
-        log.info('Processing page: %r', page)
+        log.debug('Processing page: %r', page)
         (x0, y0, x1, y1) = page.mediabox
         if page.rotate == 90:
             ctm = (0, -1, 1, 0, -y0, x1)
