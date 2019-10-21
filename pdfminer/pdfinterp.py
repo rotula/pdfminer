@@ -864,7 +864,7 @@ class PDFPageInterpreter(object):
     #   Render the content streams.
     #   This method may be called recursively.
     def render_contents(self, resources, streams, ctm=MATRIX_IDENTITY):
-        log.info('render_contents: resources=%r, streams=%r, ctm=%r',
+        log.debug('render_contents: resources=%r, streams=%r, ctm=%r',
                  resources, streams, ctm)
         self.init_resources(resources)
         self.init_state(ctm)
