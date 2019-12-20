@@ -129,7 +129,7 @@ class PDFXRef(PDFBaseXRef):
                 if use != b'n':
                     continue
                 self.offsets[objid] = (None, long(pos) if six.PY2 else int(pos), int(genno))
-        log.info('xref objects: %r', self.offsets)
+        log.debug('xref objects: %r', self.offsets)
         self.load_trailer(parser)
         return
 
