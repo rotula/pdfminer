@@ -98,7 +98,10 @@ class PDFPage(object):
         def get_label(numtree, cnt):
             tree = None
             for i in range(0, len(numtree), 2):
-                if cnt <= numtree[i]:
+                if cnt == numtree[i]:
+                    break
+                elif cnt < numtree[i]:
+                    i -= 2
                     break
             startcnt = numtree[i]
             tree = numtree[i + 1]
