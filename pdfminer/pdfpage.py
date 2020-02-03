@@ -9,6 +9,7 @@ from .pdftypes import dict_value
 from .pdfparser import PDFParser
 from .pdfdocument import PDFDocument
 from .pdfdocument import PDFTextExtractionNotAllowed
+from .utils import make_compat_str
 
 import six  # Python 2+3 compatibility
 
@@ -106,12 +107,12 @@ class PDFPage(object):
             startcnt = numtree[i]
             tree = numtree[i + 1]
             start = tree.get("St", 1)
-            prefix = tree.get("P", "")
+            prefix = make_compat_str(tree.get("P", b"").decode("ISO-8859-1"))
             style = tree.get("S").name
             num = start + (cnt - startcnt)
             value = ""
             if style == "D":
-                value = str(num)
+                value = make_compat_str(str(num))
             elif style == "R":
                 value = to_roman(num)
             elif style == "r":
