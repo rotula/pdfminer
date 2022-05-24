@@ -776,8 +776,25 @@ class PDFPageInterpreter(object):
             if settings.STRICT:
                 raise PDFInterpreterError('No font specified!')
             return
-        self.device.render_string(self.textstate, seq)
+        if not self._is_whitish():
+            self.device.render_string(self.textstate, seq)
         return
+
+    def _is_whitish(self):
+        """
+        Check if we are in a white on white situation.
+
+        There are several possibilities: Either self.graphicstate
+        has an attribute color with value 1 (grayscale, all white?)
+        or the nonstroking color (self.graphicstate.ncolor) has a value
+        of white, i. e. [0,0,0,0] (CYMK with all zero) or [1,1,1] (RGB
+        with all 100 percent, though I have never encountered the last
+        one).
+        """
+        try:
+            return self.graphicstate.color == 1
+        except AttributeError:
+            return self.graphicstate.ncolor == [0,0,0,0] or self.graphicstate.ncolor == [1,1,1]
 
     # show
     def do_Tj(self, s):
