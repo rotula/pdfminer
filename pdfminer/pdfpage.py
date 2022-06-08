@@ -118,10 +118,10 @@ class PDFPage(object):
             elif style == "r":
                 value = to_roman(num).lower()
             elif style == "A":
-                value = (((num - 1)/26 + 1)*
+                value = ((int((num - 1)/26) + 1)*
                         ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(num - 1) % 26]))
             elif style == "a":
-                value = (((num - 1)/26 + 1)*
+                value = ((int((num - 1)/26) + 1)*
                         ("abcdefghijklmnopqrstuvwxyz"[(num - 1) % 26]))
             return prefix + value
         def search(obj, parent):
