@@ -1,0 +1,28 @@
+TODOs
+=======
+
+Bugfix PDFminer
+---------------
+
+Problem: Extraktion römisch gezählter Seiten, die im PDF um ein Kleinbuchstabensuffix ergänzt, sind schlägt fehl.
+
+Beispiel: BSB 66298 (MGH Fontes iuris N. S. 8,1), wo auf S. "XLVIII" (Scan 00048) der Abbildungsteil folgt: "XLVIIIa" - "XLVIIIh".
+
+Traceback: 
+
+Traceback (most recent call last):
+  File "C:\ProgramData\Anaconda3\Scripts\anapdf-script.py", line 33, in <module>
+    sys.exit(load_entry_point('anapdf', 'console_scripts', 'anapdf')())
+  File "c:\users\andreas öffner\git\anapdf\src\anapdf\scripts\anapdf_script.py", line 108, in main
+    a.analyze()
+  File "c:\users\andreas öffner\git\anapdf\src\anapdf\analyzer.py", line 105, in analyze
+    self.get_xml_data()
+  File "c:\users\andreas öffner\git\anapdf\src\anapdf\analyzer.py", line 412, in get_xml_data
+    for page in PDFPage.get_pages(
+  File "c:\users\andreas öffner\git\pdfminer\pdfminer\pdfpage.py", line 195, in get_pages
+    for (pageno, page) in enumerate(klass.create_pages(doc)):
+  File "c:\users\andreas öffner\git\pdfminer\pdfminer\pdfpage.py", line 165, in create_pages
+    label = get_label(fullnumtree, cnt)
+  File "c:\users\andreas öffner\git\pdfminer\pdfminer\pdfpage.py", line 124, in get_label
+    value = (((num - 1)/26 + 1)*
+TypeError: can't multiply sequence by non-int of type 'float'
