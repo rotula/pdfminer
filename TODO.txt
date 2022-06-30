@@ -1,6 +1,19 @@
 TODOs
 =======
 
+Bugfix PDFminer: whitex
+-----------------------
+
+Das "whitex"-Problem (Extraktion von weißem/transparentem Text) besteht auch nach der Anpassung von anapdf/PDFminer weiterhin. 
+Zitat aus dem ph zu BSB 2243 = koelzer_2016_2_bsb_2243:
+
+"
+Scan 000007 = S. 577 und Scan 00211 = S. 781 gibt es jw. ein "blindes" (und funktionsloses) "M", das auch die revidierte anapdf nicht beseitigt hat. 
+>> Vgl. die index.htm bei "TimesNewRomanPSMT", CID 77 und in der .xml die Zeile "<text font="LJSUYH+TimesNewRomanPSMT" bbox="67.921,698.491,79.478,715.573" size="17.082" cid="77" rise="0" origin="67.921,702.482" msize="13.0" glyphname="M">M</text>"
+>> Vgl. die index.htm bei "TimesNewRomanPS-BoldMT", CID 77 und in der .xml die Zeile "<text font="LJSUYH+TimesNewRomanPSMT" bbox="59.527,700.992,68.862,714.789" size="13.797" cid="77" rise="0" origin="59.527,704.216" msize="10.5" glyphname="M">M</text>"
+"
+
+
 Bugfix PDFminer
 ---------------
 
