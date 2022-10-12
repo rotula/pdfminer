@@ -1,6 +1,14 @@
 TODOs
 =======
 
+Bugfix PDFminer: glyphnames
+---------------------------
+
+Glyphnames sind nach Erstellung der xml oftmals falsch/verschoben:
+1) Versuch mit QQ zur Geistesgesch. 20: Gegenüber Elementwert verschoben um eine Position im Alphabet
+2) Versuch mit Digitalisierungs-Export (Erlkönig 8): Im Lesefluss um ein Zeichen verrutscht
+
+
 Bugfix PDFminer: whitex
 -----------------------
 
