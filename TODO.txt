@@ -1,6 +1,16 @@
 TODOs
 =======
 
+Bugfix: spaces after combining chars
+------------------------------------
+- Überschüssiges Leerzeichen nach combining character (im Wortinnern!), cf. BSB 2276, 2267, 2271, 2272, 2273
+	>> weniger dramatisch, aber ähnlich gelagert: zwischen römischen Zahlen und hochgestellten Anm.ziffern; vgl. 2271, 2272
+
+Extraction fix: Spaced text
+----------------------------
+BSB 2265 (bibliography) etc.
+
+
 Bugfix PDFminer: glyphnames
 ---------------------------
 
