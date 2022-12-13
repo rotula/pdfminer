@@ -228,11 +228,15 @@ class LTAnno(LTItem, LTText):
 class LTChar(LTComponent, LTText):
 
     def __init__(self, matrix, font, fontsize, scaling, rise,
-                 text, textwidth, textdisp, cid=-1):
+                 text, textwidth, textdisp, cid=-1,
+                 color=None, ncolor=None, scolor=None):
         LTText.__init__(self)
         self._text = text
         self.matrix = matrix
         self.fontname = font.fontname
+        self.color = color
+        self.ncolor = ncolor
+        self.scolor = scolor
         # cid == -1 means: was not specified, undefined
         self.cid = cid
         if hasattr(font, "cid2glyphname"):

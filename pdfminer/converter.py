@@ -113,7 +113,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             evenodd, gstate.scolor, gstate.ncolor))
         return
 
-    def render_char(self, matrix, font, fontsize, scaling, rise, cid):
+    def render_char(self, matrix, font, fontsize, scaling, rise,
+                    cid, color=None, ncolor=None, scolor=None):
         try:
             text = font.to_unichr(cid)
             assert isinstance(text, six.text_type), str(type(text))
@@ -121,7 +122,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             text = self.handle_undefined_char(font, cid)
         textwidth = font.char_width(cid)
         textdisp = font.char_disp(cid)
-        item = LTChar(matrix, font, fontsize, scaling, rise, text, textwidth, textdisp, cid)
+        item = LTChar(matrix, font, fontsize, scaling, rise, text, textwidth, textdisp, cid,
+                      color, ncolor, scolor)
         self.cur_item.add(item)
         return item.adv
 
@@ -531,8 +533,13 @@ class XMLConverter(PDFConverter):
                 # (enc(item.fontname), bbox2str(item.bbox), item.size,
                 # str(item.cid), str(item.rise), origin2str(item.origin),
                 # item.msize))
-                self.write('<text font="%s" bbox="%s" size="%.3f" cid="%s" rise="%s" origin="%s" msize="%s" glyphname="%s">' %
-                                 (enc(item.fontname, None), bbox2str(item.bbox), item.size, item.cid, item.rise, origin2str(item.origin), item.msize, item.glyphname))
+                self.write(('<text font="%s" bbox="%s" size="%.3f" cid="%s" '
+                            'rise="%s" origin="%s" msize="%s" '
+                            'glyphname="%s" color="%s" ncolor="%s" scolor="%s">') %
+                           (enc(item.fontname, None), bbox2str(item.bbox),
+                            item.size, item.cid, item.rise, origin2str(
+                                item.origin),
+                            item.msize, item.glyphname, item.color, item.ncolor, item.scolor))
                 item_text = item.get_text()
                 try:
                     if ord(item_text) < 32:

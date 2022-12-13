@@ -776,8 +776,9 @@ class PDFPageInterpreter(object):
             if settings.STRICT:
                 raise PDFInterpreterError('No font specified!')
             return
+        # import pdb; pdb.set_trace()
         if not self._is_whitish():
-            self.device.render_string(self.textstate, seq)
+            self.device.render_string(self.textstate, seq, self.graphicstate)
         return
 
     def _is_whitish(self):
@@ -791,8 +792,10 @@ class PDFPageInterpreter(object):
         with all 100 percent, though I have never encountered the last
         one).
         """
+        # experimental
+        # return False
         try:
-            return self.graphicstate.color == 1
+            return self.graphicstate.color == 1 or self.graphicstate.color == (0, 0, 0, 0)
         except AttributeError:
             return self.graphicstate.ncolor == [0,0,0,0] or self.graphicstate.ncolor == [1,1,1]
 
