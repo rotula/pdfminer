@@ -792,7 +792,7 @@ class PDFPageInterpreter(object):
         one).
         """
         try:
-            return self.graphicstate.color == 1
+            return self.graphicstate.color == 1 or self.graphicstate.color == (0, 0, 0, 0)
         except AttributeError:
             return self.graphicstate.ncolor == [0,0,0,0] or self.graphicstate.ncolor == [1,1,1]
 
