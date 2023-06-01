@@ -112,9 +112,11 @@ class PDFGraphicState(object):
 
         # stroking color
         self.scolor = None
+        self.s_colorant_name = None
 
         # non stroking color
         self.ncolor = None
+        self.n_colorant_name = None
         return
 
     def copy(self):
@@ -127,16 +129,19 @@ class PDFGraphicState(object):
         obj.intent = self.intent
         obj.flatness = self.flatness
         obj.scolor = self.scolor
+        obj.s_colorant_name = self.s_colorant_name
         obj.ncolor = self.ncolor
+        obj.n_colorant_name = self.n_colorant_name
         return obj
 
     def __repr__(self):
         return ('<PDFGraphicState: linewidth=%r, linecap=%r, linejoin=%r, '
                 ' miterlimit=%r, dash=%r, intent=%r, flatness=%r, '
-                ' stroking color=%r, non stroking color=%r>' %
+                ' stroking color=%r, non stroking color=%r, '
+                ' stroking_colorant_name=%r, non_stroking_colorant_name=%r>' %
                 (self.linewidth, self.linecap, self.linejoin,
                  self.miterlimit, self.dash, self.intent, self.flatness,
-                 self.scolor, self.ncolor))
+                 self.scolor, self.ncolor, self.s_colorant_name, self.n_colorant_name))
 
 
 ##  Resource Manager
@@ -356,6 +361,8 @@ class PDFPageInterpreter(object):
                 return PDFColorSpace(name, stream_value(spec[1])['N'])
             elif name == 'DeviceN' and isinstance(spec, list) and 2 <= len(spec):
                 return PDFColorSpace(name, len(list_value(spec[1])))
+            elif name == 'Separation' and isinstance(spec, list) and 2 <= len(spec):
+                return PDFColorSpace(name, 1, literal_name(spec[1]))
             else:
                 return PREDEFINED_COLORSPACE.get(name)
         for (k, v) in six.iteritems(dict_value(resources)):
@@ -582,7 +589,7 @@ class PDFPageInterpreter(object):
                 raise PDFInterpreterError('Undefined ColorSpace: %r' % name)
         return
 
-    # setcolorspace-non-strokine
+    # setcolorspace-non-stroking
     def do_cs(self, name):
         try:
             self.ncs = self.csmap[literal_name(name)]
@@ -636,6 +643,10 @@ class PDFPageInterpreter(object):
                 raise PDFInterpreterError('No colorspace specified!')
             n = 1
         self.graphicstate.scolor = self.pop(n)
+        try:
+            self.graphicstate.s_colorant_name = self.scs.colorant_name
+        except:
+            pass
         return
 
     def do_scn(self):
@@ -646,6 +657,10 @@ class PDFPageInterpreter(object):
                 raise PDFInterpreterError('No colorspace specified!')
             n = 1
         self.graphicstate.ncolor = self.pop(n)
+        try:
+            self.graphicstate.n_colorant_name = self.ncs.colorant_name
+        except:
+            pass
         return
 
     def do_SC(self):
