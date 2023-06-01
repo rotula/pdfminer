@@ -102,7 +102,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             if ((x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
                 (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
                 self.cur_item.add(LTRect(gstate.linewidth, (x0, y0, x2, y2),
-                    stroke, fill, evenodd, gstate.scolor, gstate.ncolor))
+                    stroke, fill, evenodd, gstate.scolor, gstate.ncolor,
+                    gstate.s_colorant_name, gstate.n_colorant_name))
                 return
         # other shapes
         pts = []
@@ -501,8 +502,9 @@ class XMLConverter(PDFConverter):
                 self.write('<line linewidth="%d" bbox="%s" />\n' %
                                  (item.linewidth, bbox2str(item.bbox)))
             elif isinstance(item, LTRect):
-                self.write('<rect linewidth="%d" bbox="%s" />\n' %
-                                 (item.linewidth, bbox2str(item.bbox)))
+                self.write('<rect linewidth="%d" bbox="%s" scolor="%s" ncolor="%s" ncolorant="%s" scolorant="%s"/>\n' %
+                                 (item.linewidth, bbox2str(item.bbox), item.stroking_color, item.non_stroking_color,
+                                  item.n_colorant, item.s_colorant))
             elif isinstance(item, LTCurve):
                 self.write('<curve linewidth="%d" bbox="%s" pts="%s"/>\n' %
                                  (item.linewidth, bbox2str(item.bbox), item.get_pts()))

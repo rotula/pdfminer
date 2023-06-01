@@ -154,7 +154,8 @@ class LTComponent(LTItem):
 ##
 class LTCurve(LTComponent):
 
-    def __init__(self, linewidth, pts, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
+    def __init__(self, linewidth, pts, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None,
+                 s_colorant = None, n_colorant = None):
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
         self.linewidth = linewidth
@@ -163,6 +164,8 @@ class LTCurve(LTComponent):
         self.evenodd = evenodd
         self.stroking_color = stroking_color
         self.non_stroking_color = non_stroking_color
+        self.s_colorant = s_colorant
+        self.n_colorant = n_colorant
         return
 
     def get_pts(self):
@@ -182,9 +185,11 @@ class LTLine(LTCurve):
 ##
 class LTRect(LTCurve):
 
-    def __init__(self, linewidth, bbox, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
+    def __init__(self, linewidth, bbox, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None,
+                 s_colorant = None, n_colorant = None):
         (x0, y0, x1, y1) = bbox
-        LTCurve.__init__(self, linewidth, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], stroke, fill, evenodd, stroking_color, non_stroking_color)
+        LTCurve.__init__(self, linewidth, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], stroke, fill, evenodd, stroking_color, non_stroking_color,
+                         s_colorant, n_colorant)
         return
 
 
