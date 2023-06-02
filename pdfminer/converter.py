@@ -115,7 +115,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return
 
     def render_char(self, matrix, font, fontsize, scaling, rise,
-                    cid, color=None, ncolor=None, scolor=None):
+                    cid, color=None, ncolor=None, scolor=None,
+                    ncolorant=None, scolorant=None):
         try:
             text = font.to_unichr(cid)
             assert isinstance(text, six.text_type), str(type(text))
@@ -124,7 +125,7 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         textwidth = font.char_width(cid)
         textdisp = font.char_disp(cid)
         item = LTChar(matrix, font, fontsize, scaling, rise, text, textwidth, textdisp, cid,
-                      color, ncolor, scolor)
+                      color, ncolor, scolor, ncolorant, scolorant)
         self.cur_item.add(item)
         return item.adv
 
@@ -537,11 +538,13 @@ class XMLConverter(PDFConverter):
                 # item.msize))
                 self.write(('<text font="%s" bbox="%s" size="%.3f" cid="%s" '
                             'rise="%s" origin="%s" msize="%s" '
-                            'glyphname="%s" color="%s" ncolor="%s" scolor="%s">') %
+                            'glyphname="%s" color="%s" ncolor="%s" scolor="%s" '
+                            'ncolorant="%s" scolorant="%s">') %
                            (enc(item.fontname, None), bbox2str(item.bbox),
                             item.size, item.cid, item.rise, origin2str(
                                 item.origin),
-                            item.msize, item.glyphname, item.color, item.ncolor, item.scolor))
+                            item.msize, item.glyphname, item.color, item.ncolor, item.scolor,
+                            item.ncolorant, item.scolorant))
                 item_text = item.get_text()
                 try:
                     if ord(item_text) < 32:

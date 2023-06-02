@@ -234,7 +234,8 @@ class LTChar(LTComponent, LTText):
 
     def __init__(self, matrix, font, fontsize, scaling, rise,
                  text, textwidth, textdisp, cid=-1,
-                 color=None, ncolor=None, scolor=None):
+                 color=None, ncolor=None, scolor=None,
+                 ncolorant=None, scolorant=None):
         LTText.__init__(self)
         self._text = text
         self.matrix = matrix
@@ -242,6 +243,8 @@ class LTChar(LTComponent, LTText):
         self.color = color
         self.ncolor = ncolor
         self.scolor = scolor
+        self.ncolorant = ncolorant
+        self.scolorant = scolorant
         # cid == -1 means: was not specified, undefined
         self.cid = cid
         if hasattr(font, "cid2glyphname"):

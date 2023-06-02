@@ -68,6 +68,8 @@ class PDFTextDevice(PDFDevice):
         scolor = None
         ncolor = None
         color = None
+        ncolorant = None
+        scolorant = None
         if graphicstate is not None:
             try:
                 color = str(graphicstate.color)
@@ -75,6 +77,8 @@ class PDFTextDevice(PDFDevice):
                 color = "None"
             scolor = str(graphicstate.scolor)
             ncolor = str(graphicstate.ncolor)
+            ncolorant = graphicstate.n_colorant_name
+            scolorant = graphicstate.s_colorant_name
         if font.is_multibyte():
             wordspace = 0
         dxscale = .001 * fontsize * scaling
@@ -86,12 +90,12 @@ class PDFTextDevice(PDFDevice):
             textstate.linematrix = self.render_string_horizontal(
                 seq, matrix, textstate.linematrix, font, fontsize,
                 scaling, charspace, wordspace, rise, dxscale,
-                color, ncolor, scolor)
+                color, ncolor, scolor, ncolorant, scolorant)
         return
 
     def render_string_horizontal(self, seq, matrix, pos,
                                  font, fontsize, scaling, charspace, wordspace, rise, dxscale,
-                                 color=None, ncolor=None, scolor=None):
+                                 color=None, ncolor=None, scolor=None, ncolorant=None, scolorant=None):
         (x, y) = pos
         needcharspace = False
         for obj in seq:
@@ -104,7 +108,7 @@ class PDFTextDevice(PDFDevice):
                         x += charspace
                     x += self.render_char(utils.translate_matrix(matrix, (x, y)),
                                           font, fontsize, scaling, rise, cid,
-                                          color, ncolor, scolor)
+                                          color, ncolor, scolor, ncolorant, scolorant)
                     if cid == 32 and wordspace:
                         x += wordspace
                     needcharspace = True
