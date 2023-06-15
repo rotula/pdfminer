@@ -1,5 +1,38 @@
 TODOs
-=======
+=====
+
+Some rectangles are not drawn correctly
+---------------------------------------
+
+Problem:
+
+When we tried to extract all semantic rectangles from PDF supplied by our
+typesetter, we noticed that some rectangles are not drawn (i.e., they are
+not included in the XML output stream).
+
+Analysis:
+
+We first assumed that it had something to do with colors (or hidden colors) as
+our typesetter added elements that were supposed not to interfere with the layout.
+
+But it turned out to be a bug in PDFMiner:
+
+In ``converter.py``, line 81 (``paint_path``) a join of all path elements in the
+current path (``self.curpath``) is executed. This results in a sequence of letters,
+which can be interpreted to give the desired shape ('mlllh' for rectangle, 'ml' for
+horizontal/vertical line). If no shape can be detected, each pair of coordinates is
+dealt with directly, resulting in a ``LTCurve``. Yet, if there are two or more
+rectangle coordinates in the current path, several ``LTRect``s should be detected
+and rendered.
+
+Solution:
+
+There are basically two solutions:
+
+(1) Modify ``paint_path`` so that it renders correct shapes (preferred solution).
+
+(2) Modify ``paint_path`` so that it adds the current colorant to the ``LTCurve``
+and then post-process the XML to change the curve into a ``rect`` tag.
 
 Bugfix: spaces after combining chars
 ------------------------------------
