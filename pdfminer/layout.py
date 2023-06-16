@@ -176,8 +176,12 @@ class LTCurve(LTComponent):
 ##
 class LTLine(LTCurve):
 
-    def __init__(self, linewidth, p0, p1, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
-        LTCurve.__init__(self, linewidth, [p0, p1], stroke, fill, evenodd, stroking_color, non_stroking_color)
+    def __init__(self, linewidth, p0, p1, stroke = False, fill = False, evenodd = False,
+                 stroking_color = None, non_stroking_color = None,
+                 s_colorant = None, n_colorant = None):
+        LTCurve.__init__(self, linewidth, [p0, p1], stroke, fill, evenodd,
+                         stroking_color, non_stroking_color,
+                         s_colorant, n_colorant)
         return
 
 

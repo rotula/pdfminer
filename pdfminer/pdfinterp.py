@@ -510,11 +510,12 @@ class PDFPageInterpreter(object):
 
     # rectangle
     def do_re(self, x, y, w, h):
-        self.curpath.append(('m', x, y))
-        self.curpath.append(('l', x+w, y))
-        self.curpath.append(('l', x+w, y+h))
-        self.curpath.append(('l', x, y+h))
-        self.curpath.append(('h',))
+        # self.curpath.append(('m', x, y))
+        # self.curpath.append(('l', x+w, y))
+        # self.curpath.append(('l', x+w, y+h))
+        # self.curpath.append(('l', x, y+h))
+        # self.curpath.append(('h',))
+        self.curpath.append(('re', x, y, w, h))
         return
 
     # stroke
