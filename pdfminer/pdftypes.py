@@ -1,6 +1,7 @@
 
 import zlib
 import logging
+from io import BytesIO
 from .lzw import lzwdecode
 from .ascii85 import ascii85decode
 from .ascii85 import asciihexdecode
@@ -252,9 +253,35 @@ class PDFStream(PDFObject):
                 try:
                     data = zlib.decompress(data)
                 except zlib.error as e:
-                    if settings.STRICT:
-                        raise PDFException('Invalid zlib bytes: %r, %r' % (e, data))
-                    data = b''
+                    # Strange behavior: sometimes we get an error:
+                    # 'zlib.error: Error -5 while decompressing data:
+                    # incomplete or truncated stream' if we use
+                    # ``decompress`` directly, but if we use
+                    # ``zlib.decompressobj()``, it works.
+                    try:
+                        zobj = zlib.decompressobj()
+                        data  = zobj.decompress(data)
+                    except zlib.error as e2:
+                        # Sometimes even this approach is not sufficient
+                        # and we receive an error -3: 'incorrect data check',
+                        # solution taken from here:
+                        # <https://github.com/py-pdf/pypdf/issues/422#issue-317510129>
+                        zobj2 = zlib.decompressobj(zlib.MAX_WBITS | 32)
+                        f = BytesIO(data)
+                        result = b''
+                        local_buffer = f.read(1)
+                        try:
+                            while local_buffer:
+                                result += zobj2.decompress(local_buffer)
+                                local_buffer = f.read(1)
+                            data = result
+                        except zlib.error as e3:
+                            if settings.STRICT:
+                                raise PDFException('Invalid zlib bytes: %r, %r' % (e, data))
+                            # Even if there are errors, sometimes, we can
+                            # still use the (partial?) result.
+                            # data = b''
+                            data = result
             elif f in LITERALS_LZW_DECODE:
                 data = lzwdecode(data)
             elif f in LITERALS_ASCII85_DECODE:
