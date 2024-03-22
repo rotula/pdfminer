@@ -32,7 +32,9 @@ There are basically two solutions:
 (1) Modify ``paint_path`` so that it renders correct shapes (preferred solution).
 
 (2) Modify ``paint_path`` so that it adds the current colorant to the ``LTCurve``
-and then post-process the XML to change the curve into a ``rect`` tag.
+and then post-process the XML to change the curve into a ``rect`` tag. 
+
+Solution no. 2 was implemented.
 
 Bugfix: spaces after combining chars
 ------------------------------------
