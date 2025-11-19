@@ -45,7 +45,11 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         (x0, y0) = apply_matrix_pt(ctm, (x0, y0))
         (x1, y1) = apply_matrix_pt(ctm, (x1, y1))
         mediabox = (0, 0, abs(x0-x1), abs(y0-y1))
-        self.cur_item = LTPage(self.pageno, mediabox, label=page.label)
+        (x0, y0, x1, y1) = page.cropbox
+        (x0, y0) = apply_matrix_pt(ctm, (x0, y0))
+        (x1, y1) = apply_matrix_pt(ctm, (x1, y1))
+        cropbox = (0, 0, abs(x0-x1), abs(y0-y1))
+        self.cur_item = LTPage(self.pageno, mediabox, label=page.label, cropbox=cropbox, cropboxraw=page.cropbox)
         return
 
     def end_page(self, page):
@@ -482,11 +486,16 @@ class XMLConverter(PDFConverter):
         def render(item):
             if isinstance(item, LTPage):
                 labelattr = ''
+                cropboxattr = ''
+                cropboxrawattr = ''
                 if item.label is not None:
                     labelattr = ' label="%s"' % item.label
-                self.write('<page id="%s" bbox="%s" rotate="%d"%s>\n' %
+                if item.cropbox is not None and item.cropbox != item.bbox:
+                    cropboxattr = ' cropbox="%s"' % bbox2str(item.cropbox)
+                    cropboxrawattr = ' cropboxraw="%s"' % bbox2str(item.cropboxraw)
+                self.write('<page id="%s" bbox="%s" rotate="%d"%s%s%s>\n' %
                                  (item.pageid, bbox2str(item.bbox),
-                                     item.rotate, labelattr))
+                                     item.rotate, labelattr, cropboxattr, cropboxrawattr))
                 for child in item:
                     render(child)
                 if item.groups is not None:

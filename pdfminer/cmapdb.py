@@ -231,7 +231,7 @@ class CMapDB(object):
     @classmethod
     def _load_data(klass, name):
         filename = '%s.pickle.gz' % name
-        log.info('loading: %r', name)
+        log.debug('loading: %r', name)
         cmap_paths = (os.environ.get('CMAP_PATH', '/usr/share/pdfminer/'),
                       os.path.join(os.path.dirname(__file__), 'cmap'),)
         for directory in cmap_paths:
