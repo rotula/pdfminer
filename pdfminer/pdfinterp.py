@@ -112,9 +112,11 @@ class PDFGraphicState(object):
 
         # stroking color
         self.scolor = None
+        self.s_colorant_name = None
 
         # non stroking color
         self.ncolor = None
+        self.n_colorant_name = None
         return
 
     def copy(self):
@@ -127,16 +129,19 @@ class PDFGraphicState(object):
         obj.intent = self.intent
         obj.flatness = self.flatness
         obj.scolor = self.scolor
+        obj.s_colorant_name = self.s_colorant_name
         obj.ncolor = self.ncolor
+        obj.n_colorant_name = self.n_colorant_name
         return obj
 
     def __repr__(self):
         return ('<PDFGraphicState: linewidth=%r, linecap=%r, linejoin=%r, '
                 ' miterlimit=%r, dash=%r, intent=%r, flatness=%r, '
-                ' stroking color=%r, non stroking color=%r>' %
+                ' stroking color=%r, non stroking color=%r, '
+                ' stroking_colorant_name=%r, non_stroking_colorant_name=%r>' %
                 (self.linewidth, self.linecap, self.linejoin,
                  self.miterlimit, self.dash, self.intent, self.flatness,
-                 self.scolor, self.ncolor))
+                 self.scolor, self.ncolor, self.s_colorant_name, self.n_colorant_name))
 
 
 ##  Resource Manager
@@ -356,6 +361,8 @@ class PDFPageInterpreter(object):
                 return PDFColorSpace(name, stream_value(spec[1])['N'])
             elif name == 'DeviceN' and isinstance(spec, list) and 2 <= len(spec):
                 return PDFColorSpace(name, len(list_value(spec[1])))
+            elif name == 'Separation' and isinstance(spec, list) and 2 <= len(spec):
+                return PDFColorSpace(name, 1, literal_name(spec[1]))
             else:
                 return PREDEFINED_COLORSPACE.get(name)
         for (k, v) in six.iteritems(dict_value(resources)):
@@ -503,11 +510,12 @@ class PDFPageInterpreter(object):
 
     # rectangle
     def do_re(self, x, y, w, h):
-        self.curpath.append(('m', x, y))
-        self.curpath.append(('l', x+w, y))
-        self.curpath.append(('l', x+w, y+h))
-        self.curpath.append(('l', x, y+h))
-        self.curpath.append(('h',))
+        # self.curpath.append(('m', x, y))
+        # self.curpath.append(('l', x+w, y))
+        # self.curpath.append(('l', x+w, y+h))
+        # self.curpath.append(('l', x, y+h))
+        # self.curpath.append(('h',))
+        self.curpath.append(('re', x, y, w, h))
         return
 
     # stroke
@@ -582,7 +590,7 @@ class PDFPageInterpreter(object):
                 raise PDFInterpreterError('Undefined ColorSpace: %r' % name)
         return
 
-    # setcolorspace-non-strokine
+    # setcolorspace-non-stroking
     def do_cs(self, name):
         try:
             self.ncs = self.csmap[literal_name(name)]
@@ -594,36 +602,48 @@ class PDFPageInterpreter(object):
     # setgray-stroking
     def do_G(self, gray):
         self.graphicstate.color = gray
+        self.graphicstate.scolor = gray
+        self.graphicstate.s_colorant_name = None
         #self.do_CS(LITERAL_DEVICE_GRAY)
         return
 
     # setgray-non-stroking
     def do_g(self, gray):
         self.graphicstate.color = gray
+        self.graphicstate.ncolor = gray
+        self.graphicstate.n_colorant_name = None
         #self.do_cs(LITERAL_DEVICE_GRAY)
         return
 
     # setrgb-stroking
     def do_RG(self, r, g, b):
         self.graphicstate.color = (r, g, b)
+        self.graphicstate.scolor = (r, g, b)
+        self.graphicstate.s_colorant_name = None
         #self.do_CS(LITERAL_DEVICE_RGB)
         return
 
     # setrgb-non-stroking
     def do_rg(self, r, g, b):
         self.graphicstate.color = (r, g, b)
+        self.graphicstate.ncolor = (r, g, b)
+        self.graphicstate.n_colorant_name = None
         #self.do_cs(LITERAL_DEVICE_RGB)
         return
 
     # setcmyk-stroking
     def do_K(self, c, m, y, k):
         self.graphicstate.color = (c, m, y, k)
+        self.graphicstate.scolor = (c, m, y, k)
+        self.graphicstate.s_colorant_name = None
         #self.do_CS(LITERAL_DEVICE_CMYK)
         return
 
     # setcmyk-non-stroking
     def do_k(self, c, m, y, k):
         self.graphicstate.color = (c, m, y, k)
+        self.graphicstate.ncolor = (c, m, y, k)
+        self.graphicstate.n_colorant_name = None
         #self.do_cs(LITERAL_DEVICE_CMYK)
         return
 
@@ -636,6 +656,10 @@ class PDFPageInterpreter(object):
                 raise PDFInterpreterError('No colorspace specified!')
             n = 1
         self.graphicstate.scolor = self.pop(n)
+        try:
+            self.graphicstate.s_colorant_name = self.scs.colorant_name
+        except:
+            pass
         return
 
     def do_scn(self):
@@ -646,6 +670,10 @@ class PDFPageInterpreter(object):
                 raise PDFInterpreterError('No colorspace specified!')
             n = 1
         self.graphicstate.ncolor = self.pop(n)
+        try:
+            self.graphicstate.n_colorant_name = self.ncs.colorant_name
+        except:
+            pass
         return
 
     def do_SC(self):
@@ -776,8 +804,9 @@ class PDFPageInterpreter(object):
             if settings.STRICT:
                 raise PDFInterpreterError('No font specified!')
             return
+        # import pdb; pdb.set_trace()
         if not self._is_whitish():
-            self.device.render_string(self.textstate, seq)
+            self.device.render_string(self.textstate, seq, self.graphicstate)
         return
 
     def _is_whitish(self):
@@ -791,6 +820,8 @@ class PDFPageInterpreter(object):
         with all 100 percent, though I have never encountered the last
         one).
         """
+        # experimental
+        # return False
         try:
             return self.graphicstate.color == 1 or self.graphicstate.color == (0, 0, 0, 0)
         except AttributeError:

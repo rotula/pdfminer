@@ -1,5 +1,6 @@
 
 # -*- coding: utf-8 -*-
+from ast import Lt
 import logging
 import re
 from .pdfdevice import PDFTextDevice
@@ -82,42 +83,116 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return
 
     def paint_path(self, gstate, stroke, fill, evenodd, path):
-        shape = ''.join(x[0] for x in path)
-        if shape == 'ml':
-            # horizontal/vertical line
-            (_, x0, y0) = path[0]
-            (_, x1, y1) = path[1]
-            (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
-            (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
-            if x0 == x1 or y0 == y1:
-                self.cur_item.add(LTLine(gstate.linewidth, (x0, y0), (x1, y1),
-                    stroke, fill, evenodd, gstate.scolor, gstate.ncolor))
-                return
-        if shape == 'mlllh':
-            # rectangle
-            (_, x0, y0) = path[0]
-            (_, x1, y1) = path[1]
-            (_, x2, y2) = path[2]
-            (_, x3, y3) = path[3]
-            (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
-            (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
-            (x2, y2) = apply_matrix_pt(self.ctm, (x2, y2))
-            (x3, y3) = apply_matrix_pt(self.ctm, (x3, y3))
-            if ((x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
-                (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
-                self.cur_item.add(LTRect(gstate.linewidth, (x0, y0, x2, y2),
-                    stroke, fill, evenodd, gstate.scolor, gstate.ncolor))
-                return
-        # other shapes
-        pts = []
-        for p in path:
-            for i in range(1, len(p), 2):
-                pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
-        self.cur_item.add(LTCurve(gstate.linewidth, pts, stroke, fill,
-            evenodd, gstate.scolor, gstate.ncolor))
+        curpoint = None
+        startpoint = None
+        for cmd in path:
+            if cmd[0] == 're':
+                x0 = cmd[1]
+                y0 = cmd[2]
+                x1 = x0 + cmd[3]
+                y1 = y0 + cmd[4]
+                (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
+                (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
+                self.cur_item.add(LTRect(gstate.linewidth, (x0, y0, x1, y1),
+                                         stroke, fill, evenodd, gstate.scolor,
+                                         gstate.ncolor, gstate.s_colorant_name,
+                                         gstate.n_colorant_name))
+                curpoint  = None
+                startpoint = None
+            elif cmd[0] == 'm':
+                curpoint = apply_matrix_pt(self.ctm, (cmd[1], cmd[2]))
+                startpoint = curpoint
+            elif cmd[0] == 'l':
+                (x1, y1) = apply_matrix_pt(self.ctm, (cmd[1], cmd[2]))
+                if curpoint:
+                    self.cur_item.add(LTLine(gstate.linewidth, curpoint, (x1, y1),
+                                            stroke, fill, evenodd, gstate.scolor,
+                                            gstate.ncolor, gstate.s_colorant_name,
+                                            gstate.n_colorant_name))
+                curpoint = (x1, y1)
+            elif cmd[0] == 'h':
+                if curpoint:
+                    self.cur_item.add(LTLine(gstate.linewidth, curpoint, startpoint,
+                                             stroke, fill, evenodd, gstate.scolor,
+                                             gstate.ncolor, gstate.s_colorant_name,
+                                             gstate.n_colorant_name))
+                    curpoint = None
+                    startpoint = None
+            elif cmd[0] == 'c':
+                if curpoint:
+                    c1 = apply_matrix_pt(self.ctm, (cmd[1], cmd[2]))
+                    c2 = apply_matrix_pt(self.ctm, (cmd[3], cmd[4]))
+                    endpoint = apply_matrix_pt(self.ctm, (cmd[5], cmd[6]))
+                    self.cur_item.add(LTCurve(gstate.linewidth,
+                                              curpoint + c1 + c2 + endpoint,
+                                              stroke, fill, evenodd, gstate.scolor,
+                                              gstate.ncolor, gstate.s_colorant_name,
+                                              gstate.n_colorant_name))
+                    curpoint = endpoint
+            elif cmd[0] == 'v':
+                if curpoint:
+                    c2 = apply_matrix_pt(self.ctm, (cmd[1], cmd[2]))
+                    endpoint = apply_matrix_pt(self.ctm, (cmd[3], cmd[4]))
+                    self.cur_item.add(LTCurve(gstate.linewidth,
+                                              curpoint + curpoint + c2 + endpoint,
+                                              stroke, fill, evenodd, gstate.scolor,
+                                              gstate.ncolor, gstate.s_colorant_name,
+                                              gstate.n_colorant_name))
+                    curpoint = endpoint
+            elif cmd[0] == 'y':
+                if curpoint:
+                    c1 = apply_matrix_pt(self.ctm, (cmd[1], cmd[2]))
+                    endpoint = apply_matrix_pt(self.ctm, (cmd[3], cmd[4]))
+                    self.cur_item.add(LTCurve(gstate.linewidth,
+                                              curpoint + c1 + endpoint + endpoint,
+                                              stroke, fill, evenodd, gstate.scolor,
+                                              gstate.ncolor, gstate.s_colorant_name,
+                                              gstate.n_colorant_name))
+                    curpoint = endpoint
+            else:
+                # unknown command, shouldn't happen
+                pass
         return
 
-    def render_char(self, matrix, font, fontsize, scaling, rise, cid):
+        # shape = ''.join(x[0] for x in path)
+        # if shape == 'ml':
+        #     # horizontal/vertical line
+        #     (_, x0, y0) = path[0]
+        #     (_, x1, y1) = path[1]
+        #     (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
+        #     (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
+        #     if x0 == x1 or y0 == y1:
+        #         self.cur_item.add(LTLine(gstate.linewidth, (x0, y0), (x1, y1),
+        #             stroke, fill, evenodd, gstate.scolor, gstate.ncolor))
+        #         return
+        # if shape == 'mlllh':
+        #     # rectangle
+        #     (_, x0, y0) = path[0]
+        #     (_, x1, y1) = path[1]
+        #     (_, x2, y2) = path[2]
+        #     (_, x3, y3) = path[3]
+        #     (x0, y0) = apply_matrix_pt(self.ctm, (x0, y0))
+        #     (x1, y1) = apply_matrix_pt(self.ctm, (x1, y1))
+        #     (x2, y2) = apply_matrix_pt(self.ctm, (x2, y2))
+        #     (x3, y3) = apply_matrix_pt(self.ctm, (x3, y3))
+        #     if ((x0 == x1 and y1 == y2 and x2 == x3 and y3 == y0) or
+        #         (y0 == y1 and x1 == x2 and y2 == y3 and x3 == x0)):
+        #         self.cur_item.add(LTRect(gstate.linewidth, (x0, y0, x2, y2),
+        #             stroke, fill, evenodd, gstate.scolor, gstate.ncolor,
+        #             gstate.s_colorant_name, gstate.n_colorant_name))
+        #         return
+        # # other shapes
+        # pts = []
+        # for p in path:
+        #     for i in range(1, len(p), 2):
+        #         pts.append(apply_matrix_pt(self.ctm, (p[i], p[i+1])))
+        # self.cur_item.add(LTCurve(gstate.linewidth, pts, stroke, fill,
+        #     evenodd, gstate.scolor, gstate.ncolor))
+        # return
+
+    def render_char(self, matrix, font, fontsize, scaling, rise,
+                    cid, color=None, ncolor=None, scolor=None,
+                    ncolorant=None, scolorant=None):
         try:
             text = font.to_unichr(cid)
             assert isinstance(text, six.text_type), str(type(text))
@@ -125,7 +200,8 @@ class PDFLayoutAnalyzer(PDFTextDevice):
             text = self.handle_undefined_char(font, cid)
         textwidth = font.char_width(cid)
         textdisp = font.char_disp(cid)
-        item = LTChar(matrix, font, fontsize, scaling, rise, text, textwidth, textdisp, cid)
+        item = LTChar(matrix, font, fontsize, scaling, rise, text, textwidth, textdisp, cid,
+                      color, ncolor, scolor, ncolorant, scolorant)
         self.cur_item.add(item)
         return item.adv
 
@@ -505,14 +581,17 @@ class XMLConverter(PDFConverter):
                     self.write('</layout>\n')
                 self.write('</page>\n')
             elif isinstance(item, LTLine):
-                self.write('<line linewidth="%d" bbox="%s" />\n' %
-                                 (item.linewidth, bbox2str(item.bbox)))
+                self.write('<line linewidth="%d" bbox="%s" scolor="%s" scolorant="%s"/>\n' %
+                                 (item.linewidth, bbox2str(item.bbox),
+                                  item.stroking_color, item.s_colorant))
             elif isinstance(item, LTRect):
-                self.write('<rect linewidth="%d" bbox="%s" />\n' %
-                                 (item.linewidth, bbox2str(item.bbox)))
+                self.write('<rect linewidth="%d" bbox="%s" scolor="%s" ncolor="%s" ncolorant="%s" scolorant="%s"/>\n' %
+                                 (item.linewidth, bbox2str(item.bbox), item.stroking_color, item.non_stroking_color,
+                                  item.n_colorant, item.s_colorant))
             elif isinstance(item, LTCurve):
-                self.write('<curve linewidth="%d" bbox="%s" pts="%s"/>\n' %
-                                 (item.linewidth, bbox2str(item.bbox), item.get_pts()))
+                self.write('<curve linewidth="%d" bbox="%s" pts="%s" scolor="%s" scolorant="%s"/>\n' %
+                                 (item.linewidth, bbox2str(item.bbox), item.get_pts(),
+                                  item.stroking_color, item.s_colorant))
             elif isinstance(item, LTFigure):
                 # NB: In the old fork I had to do
                 # ``str(item.name)``.
@@ -540,8 +619,15 @@ class XMLConverter(PDFConverter):
                 # (enc(item.fontname), bbox2str(item.bbox), item.size,
                 # str(item.cid), str(item.rise), origin2str(item.origin),
                 # item.msize))
-                self.write('<text font="%s" bbox="%s" size="%.3f" cid="%s" rise="%s" origin="%s" msize="%s" glyphname="%s">' %
-                                 (enc(item.fontname, None), bbox2str(item.bbox), item.size, item.cid, item.rise, origin2str(item.origin), item.msize, item.glyphname))
+                self.write(('<text font="%s" bbox="%s" size="%.3f" cid="%s" '
+                            'rise="%s" origin="%s" msize="%s" '
+                            'glyphname="%s" color="%s" ncolor="%s" scolor="%s" '
+                            'ncolorant="%s" scolorant="%s">') %
+                           (enc(item.fontname, None), bbox2str(item.bbox),
+                            item.size, item.cid, item.rise, origin2str(
+                                item.origin),
+                            item.msize, item.glyphname, item.color, item.ncolor, item.scolor,
+                            item.ncolorant, item.scolorant))
                 item_text = item.get_text()
                 try:
                     if ord(item_text) < 32:

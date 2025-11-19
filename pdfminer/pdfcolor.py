@@ -12,13 +12,14 @@ LITERAL_DEVICE_CMYK = LIT('DeviceCMYK')
 
 class PDFColorSpace(object):
 
-    def __init__(self, name, ncomponents):
+    def __init__(self, name, ncomponents, colorant_name=None):
         self.name = name
         self.ncomponents = ncomponents
+        self.colorant_name = colorant_name
         return
 
     def __repr__(self):
-        return '<PDFColorSpace: %s, ncomponents=%d>' % (self.name, self.ncomponents)
+        return '<PDFColorSpace: %s, ncomponents=%d, colorant_name=%s>' % (self.name, self.ncomponents, self.colorant_name)
 
 
 PREDEFINED_COLORSPACE = {}

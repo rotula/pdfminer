@@ -154,7 +154,8 @@ class LTComponent(LTItem):
 ##
 class LTCurve(LTComponent):
 
-    def __init__(self, linewidth, pts, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
+    def __init__(self, linewidth, pts, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None,
+                 s_colorant = None, n_colorant = None):
         LTComponent.__init__(self, get_bound(pts))
         self.pts = pts
         self.linewidth = linewidth
@@ -163,6 +164,8 @@ class LTCurve(LTComponent):
         self.evenodd = evenodd
         self.stroking_color = stroking_color
         self.non_stroking_color = non_stroking_color
+        self.s_colorant = s_colorant
+        self.n_colorant = n_colorant
         return
 
     def get_pts(self):
@@ -173,8 +176,12 @@ class LTCurve(LTComponent):
 ##
 class LTLine(LTCurve):
 
-    def __init__(self, linewidth, p0, p1, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
-        LTCurve.__init__(self, linewidth, [p0, p1], stroke, fill, evenodd, stroking_color, non_stroking_color)
+    def __init__(self, linewidth, p0, p1, stroke = False, fill = False, evenodd = False,
+                 stroking_color = None, non_stroking_color = None,
+                 s_colorant = None, n_colorant = None):
+        LTCurve.__init__(self, linewidth, [p0, p1], stroke, fill, evenodd,
+                         stroking_color, non_stroking_color,
+                         s_colorant, n_colorant)
         return
 
 
@@ -182,9 +189,11 @@ class LTLine(LTCurve):
 ##
 class LTRect(LTCurve):
 
-    def __init__(self, linewidth, bbox, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None):
+    def __init__(self, linewidth, bbox, stroke = False, fill = False, evenodd = False, stroking_color = None, non_stroking_color = None,
+                 s_colorant = None, n_colorant = None):
         (x0, y0, x1, y1) = bbox
-        LTCurve.__init__(self, linewidth, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], stroke, fill, evenodd, stroking_color, non_stroking_color)
+        LTCurve.__init__(self, linewidth, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], stroke, fill, evenodd, stroking_color, non_stroking_color,
+                         s_colorant, n_colorant)
         return
 
 
@@ -228,11 +237,18 @@ class LTAnno(LTItem, LTText):
 class LTChar(LTComponent, LTText):
 
     def __init__(self, matrix, font, fontsize, scaling, rise,
-                 text, textwidth, textdisp, cid=-1):
+                 text, textwidth, textdisp, cid=-1,
+                 color=None, ncolor=None, scolor=None,
+                 ncolorant=None, scolorant=None):
         LTText.__init__(self)
         self._text = text
         self.matrix = matrix
         self.fontname = font.fontname
+        self.color = color
+        self.ncolor = ncolor
+        self.scolor = scolor
+        self.ncolorant = ncolorant
+        self.scolorant = scolorant
         # cid == -1 means: was not specified, undefined
         self.cid = cid
         if hasattr(font, "cid2glyphname"):

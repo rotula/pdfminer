@@ -57,7 +57,7 @@ class PDFDevice(object):
 ##
 class PDFTextDevice(PDFDevice):
 
-    def render_string(self, textstate, seq):
+    def render_string(self, textstate, seq, graphicstate=None):
         matrix = utils.mult_matrix(textstate.matrix, self.ctm)
         font = textstate.font
         fontsize = textstate.fontsize
@@ -65,6 +65,20 @@ class PDFTextDevice(PDFDevice):
         charspace = textstate.charspace * scaling
         wordspace = textstate.wordspace * scaling
         rise = textstate.rise
+        scolor = None
+        ncolor = None
+        color = None
+        ncolorant = None
+        scolorant = None
+        if graphicstate is not None:
+            try:
+                color = str(graphicstate.color)
+            except AttributeError:
+                color = "None"
+            scolor = str(graphicstate.scolor)
+            ncolor = str(graphicstate.ncolor)
+            ncolorant = graphicstate.n_colorant_name
+            scolorant = graphicstate.s_colorant_name
         if font.is_multibyte():
             wordspace = 0
         dxscale = .001 * fontsize * scaling
@@ -75,11 +89,13 @@ class PDFTextDevice(PDFDevice):
         else:
             textstate.linematrix = self.render_string_horizontal(
                 seq, matrix, textstate.linematrix, font, fontsize,
-                scaling, charspace, wordspace, rise, dxscale)
+                scaling, charspace, wordspace, rise, dxscale,
+                color, ncolor, scolor, ncolorant, scolorant)
         return
 
     def render_string_horizontal(self, seq, matrix, pos,
-                                 font, fontsize, scaling, charspace, wordspace, rise, dxscale):
+                                 font, fontsize, scaling, charspace, wordspace, rise, dxscale,
+                                 color=None, ncolor=None, scolor=None, ncolorant=None, scolorant=None):
         (x, y) = pos
         needcharspace = False
         for obj in seq:
@@ -91,14 +107,16 @@ class PDFTextDevice(PDFDevice):
                     if needcharspace:
                         x += charspace
                     x += self.render_char(utils.translate_matrix(matrix, (x, y)),
-                                          font, fontsize, scaling, rise, cid)
+                                          font, fontsize, scaling, rise, cid,
+                                          color, ncolor, scolor, ncolorant, scolorant)
                     if cid == 32 and wordspace:
                         x += wordspace
                     needcharspace = True
         return (x, y)
 
     def render_string_vertical(self, seq, matrix, pos,
-                               font, fontsize, scaling, charspace, wordspace, rise, dxscale):
+                               font, fontsize, scaling, charspace, wordspace, rise, dxscale,
+                               color=None, ncolor=None, scolor=None):
         (x, y) = pos
         needcharspace = False
         for obj in seq:
