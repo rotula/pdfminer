@@ -46,8 +46,8 @@ def ascii85decode(data):
     return out
 
 # asciihexdecode(data)
-hex_re = re.compile(b'([a-f\d]{2})', re.IGNORECASE)
-trail_re = re.compile(b'^(?:[a-f\d]{2}|\s)*([a-f\d])[\s>]*$', re.IGNORECASE)
+hex_re = re.compile(b'([a-f\\d]{2})', re.IGNORECASE)
+trail_re = re.compile(b'^(?:[a-f\\d]{2}|\\s)*([a-f\\d])[\\s>]*$', re.IGNORECASE)
 
 
 def asciihexdecode(data):
